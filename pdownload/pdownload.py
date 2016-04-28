@@ -21,7 +21,7 @@ DUPLICATE = 'DUPLICATE'
 
 def get_file_name(url):
     result = urlparse(url)
-    return '_'.join(result.path.split('/'))
+    return '_'.join(result.path.split('/'))[1:]
 
 
 def download(url, timeout):
