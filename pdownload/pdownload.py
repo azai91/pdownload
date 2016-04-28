@@ -9,6 +9,7 @@ import sys
 from urlparse import urlparse
 
 from gevent import monkey
+from gevent.fileobject import FileObjectThread
 from gevent.pool import Pool
 from tqdm import tqdm
 
@@ -31,8 +32,8 @@ def download(url, timeout):
 
     try:
         response = urllib2.urlopen(url, timeout=timeout)
-        with open(fn, 'wb') as im_file:
-            im_file.write(response.read())
+        im_file = FileObjectThread(open(fn, 'wb'))
+        im_file.write(response.read())
         return url, SUCCESS, None
     except Exception as e:
         if os.path.exists(fn):
