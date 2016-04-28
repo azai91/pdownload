@@ -1,3 +1,6 @@
+from gevent import monkey
+monkey.patch_all()
+
 from argparse import ArgumentParser
 from functools import partial
 from itertools import imap
@@ -8,12 +11,11 @@ import urllib2
 import sys
 from urlparse import urlparse
 
-from gevent import monkey
 from gevent.fileobject import FileObjectThread
 from gevent.pool import Pool
 from tqdm import tqdm
 
-monkey.patch_all()
+
 
 SUCCESS = 'SUCCESS'
 FAILURE = 'FAILURE'
