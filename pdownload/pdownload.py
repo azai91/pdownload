@@ -1,13 +1,18 @@
 from argparse import ArgumentParser
 from functools import partial
 from itertools import imap
-from multiprocessing import Pool, cpu_count
 import os
 import socket
 import string
 import urllib2
 import sys
 from urlparse import urlparse
+
+from gevent import monkey
+from gevent.pool import Pool
+from tqdm import tqdm
+
+monkey.patch_all()
 
 SUCCESS = 'SUCCESS'
 FAILURE = 'FAILURE'
@@ -37,16 +42,16 @@ def download(url, timeout):
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument('--concurrency', '-c', type=int, default=cpu_count() - 1)
+    parser.add_argument('--concurrency', '-c', type=int, default=100)
     parser.add_argument('--timeout', '-t', type=int, default=socket.getdefaulttimeout())
-    parser.add_argument('--quiet', '-q', action='store_true')
+    parser.add_argument('--verbose', '-v', action='store_true')
     args = parser.parse_args()
 
     p = Pool(args.concurrency)
     func = partial(download, timeout=args.timeout)
     urls = imap(string.strip, sys.stdin)
-    for url, status, e in p.imap_unordered(func, urls):
-        if not args.quiet:
+    for url, status, e in tqdm(p.imap_unordered(func, urls)):
+        if args.verbose:
             print status + ':', url
             if e:
                 print e
