@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='pdownload',
-      version='0.2.0',
+      version='0.3.0',
       description='Parallel file downloader',
       author='Ben Harris',
       author_email='benharris247@gmail.com',
@@ -14,6 +14,6 @@ setup(name='pdownload',
       },
       zip_safe=False,
       install_requires=[
-          'gevent',
+          'requests',
           'tqdm'
       ])

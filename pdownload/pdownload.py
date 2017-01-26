@@ -1,17 +1,19 @@
-
+import logging
 import os
 import socket
 import string
 import sys
-import urllib2
 from argparse import ArgumentParser
 from functools import partial
 from itertools import imap
 from multiprocessing import Pool
+from urlparse import urlparse
 
 import requests
 from tqdm import tqdm
-from urlparse import urlparse
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 SUCCESS = 'SUCCESS'
 FAILURE = 'FAILURE'
@@ -35,6 +37,7 @@ def download(url, timeout):
             im_file.write(r.content)
         return url, SUCCESS, None
     except Exception as e:
+        logger.exception('Failed to download %s', url)
         if os.path.exists(fn):
             os.remove(fn)
         return url, FAILURE, e.message
