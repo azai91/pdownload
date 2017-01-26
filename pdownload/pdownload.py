@@ -12,9 +12,6 @@ from urlparse import urlparse
 import requests
 from tqdm import tqdm
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 SUCCESS = 'SUCCESS'
 FAILURE = 'FAILURE'
 DUPLICATE = 'DUPLICATE'
@@ -31,13 +28,12 @@ def download(url, timeout):
         return url, DUPLICATE, None
 
     try:
-        with open(fn) as im_file:
+        with open(fn, 'w') as im_file:
             r = requests.get(url, timeout=timeout)
             r.raise_for_status()
             im_file.write(r.content)
         return url, SUCCESS, None
     except Exception as e:
-        logger.exception('Failed to download %s', url)
         if os.path.exists(fn):
             os.remove(fn)
         return url, FAILURE, e.message
