@@ -1,21 +1,17 @@
-from gevent import monkey
-monkey.patch_all()
 
-from argparse import ArgumentParser
-from functools import partial
-from itertools import imap
 import os
 import socket
 import string
-import urllib2
 import sys
-from urlparse import urlparse
+import urllib2
+from argparse import ArgumentParser
+from functools import partial
+from itertools import imap
+from multiprocessing import Pool
 
-from gevent.fileobject import FileObjectThread
-from gevent.pool import Pool
+import requests
 from tqdm import tqdm
-
-
+from urlparse import urlparse
 
 SUCCESS = 'SUCCESS'
 FAILURE = 'FAILURE'
@@ -33,9 +29,10 @@ def download(url, timeout):
         return url, DUPLICATE, None
 
     try:
-        response = urllib2.urlopen(url, timeout=timeout)
-        im_file = FileObjectThread(open(fn, 'wb'))
-        im_file.write(response.read())
+        with open(fn) as im_file:
+            r = requests.get(url, timeout=timeout)
+            r.raise_for_status()
+            im_file.write(r.content)
         return url, SUCCESS, None
     except Exception as e:
         if os.path.exists(fn):
